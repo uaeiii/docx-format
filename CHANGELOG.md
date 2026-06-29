@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3.0 (2026-06-29)
+
+### Added
+- **Table page-break avoidance rule**: Tables should avoid breaking across pages when possible
+- **Smart push-down for small tables**: Tables ≤ 5 rows that would break across pages get blank lines prepended to push them to the next page
+- **Graceful fallback**: Overly long tables that can't fit on one page are allowed to break across pages
+- Verification checklist updated with table page-break check
+
 ## v1.2.0 (2026-06-29)
 
 ### Added
