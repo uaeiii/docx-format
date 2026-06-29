@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.0 (2026-06-29)
+
+### Added
+- **EMF image insertion support**: Complete solution for inserting EMF (Enhanced Metafile) vector images into docx documents
+- **Image anti-occlusion**: Picture paragraphs use SINGLE line spacing instead of EXACTLY to prevent text/image overlapping
+- **Content type registration**: Auto-registers `image/x-emf` content type in `[Content_Types].xml` for EMF support
+- **Image section**: New documentation section covering image insertion patterns (inline, paragraph-level, table cell)
+- **Trigger keywords**: Added 6 new trigger keywords for image-related tasks
+
+### Changed
+- Verification checklist expanded with 2 new image-related checks
+- Skill description updated to reflect image insertion capabilities
+
 ## v1.1.0 (2026-06-29)
 
 ### Added
