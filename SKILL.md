@@ -45,29 +45,38 @@ metadata:
 
 ## 二、字体字型号对照表
 
-| 用途 | 字体 | 字号 | 行距 | 段后间距 |
-|------|------|------|------|---------|
-| 论文题目（封面） | 黑体 | 三号（16pt） | - | - |
-| 封面信息 | 宋体 | 四号（14pt） | - | - |
-| **大标题（章标题）** | **黑体** | **小二号（18pt）** | **-** | **30-36pt** |
-| **一级节标题（1.1）** | **黑体** | **三号（16pt）** | **-** | **18-24pt** |
-| **二级节标题（1.1.1）** | **黑体** | **小三号（15pt）** | **-** | **12-15pt** |
-| **三级节标题（1.1.1.1）** | **黑体** | **小四号（12pt）** | **-** | **6-9pt** |
-| **正文** | **宋体** | **小四号（12pt）** | **20pt固定值** | - |
-| 表题与图题 | 宋体 | 五号（10.5pt） | - | - |
-| 附图说明 | 宋体 | 小五号（9pt） | - | - |
-| 参考文献及篇眉 | 宋体 | 五号（10.5pt） | 17pt固定值，段前加3pt | - |
+### 字体规则（核心）
 
-### 中文摘要字体
+> **所有中文字体使用宋体/黑体，同一段落中的英文、数字、公式及标点符号使用 Times New Roman。**（摘要部分除外，摘要按各自指定字体执行。）
+>
+> 实现方式：在 python-docx 中，设置 run 的 `font.name = 'Times New Roman'`（西文字体），同时设置 `w:eastAsia = '宋体'` 或 `'黑体'`（东亚字体）。Word 会自动将中文匹配到东亚字体，英文/数字匹配到西文字体。
 
-| 用途 | 字体 | 字号 | 行距 |
-|------|------|------|------|
-| 论文题目（居中） | 黑体 | 小二号（18pt） | 30磅 |
-| 中文摘要标题（居中） | 黑体 | 四号（14pt） | 24磅 |
-| 摘要正文（限一页） | 宋体 | 小四号（12pt） | 20磅 |
-| 关键词（3-5个） | 黑体 | 小四号（12pt） | 16磅 |
+### 正文字体对照
 
-### 英文摘要字体
+| 用途 | 中文字体 | 英文/数字字体 | 字号 | 行距 | 段后间距 |
+|------|---------|-------------|------|------|---------|
+| 论文题目（封面） | 黑体 | Times New Roman | 三号（16pt） | - | - |
+| 封面信息 | 宋体 | Times New Roman | 四号（14pt） | - | - |
+| **大标题（章标题）** | **黑体** | **Times New Roman** | **小二号（18pt）** | **-** | **30-36pt** |
+| **一级节标题（1.1）** | **黑体** | **Times New Roman** | **三号（16pt）** | **-** | **18-24pt** |
+| **二级节标题（1.1.1）** | **黑体** | **Times New Roman** | **小三号（15pt）** | **-** | **12-15pt** |
+| **三级节标题（1.1.1.1）** | **黑体** | **Times New Roman** | **小四号（12pt）** | **-** | **6-9pt** |
+| **正文** | **宋体** | **Times New Roman** | **小四号（12pt）** | **20pt固定值** | - |
+| 表题与图题 | 宋体 | Times New Roman | 五号（10.5pt） | - | - |
+| 附图说明 | 宋体 | Times New Roman | 小五号（9pt） | - | - |
+| 参考文献及篇眉 | 宋体 | Times New Roman | 五号（10.5pt） | 17pt固定值，段前加3pt | - |
+| **公式** | — | **Times New Roman** | 与上下文一致 | 与上下文一致 | - |
+
+### 中文摘要字体（摘要部分例外，不强制 Times New Roman）
+
+| 用途 | 中文字体 | 英文/数字字体 | 字号 | 行距 |
+|------|---------|-------------|------|------|
+| 论文题目（居中） | 黑体 | 可随中文 | 小二号（18pt） | 30磅 |
+| 中文摘要标题（居中） | 黑体 | 可随中文 | 四号（14pt） | 24磅 |
+| 摘要正文（限一页） | 宋体 | 可随中文 | 小四号（12pt） | 20磅 |
+| 关键词（3-5个） | 黑体 | 可随中文 | 小四号（12pt） | 16磅 |
+
+### 英文摘要字体（摘要部分例外，按各自指定字体）
 
 | 用途 | 字体 | 字号 | 行距 |
 |------|------|------|------|
@@ -193,6 +202,8 @@ metadata:
 - [ ] 一级节标题黑体三号（16pt），段后18-24pt
 - [ ] 二级节标题黑体小三号（15pt），段后12-15pt
 - [ ] 三级节标题黑体小四号（12pt），段后6-9pt
+- [ ] 正文、标题、图表、页眉中的英文和数字使用 Times New Roman（摘要部分除外）
+- [ ] 公式中的英文和数字使用 Times New Roman
 - [ ] 每章另起一页
 - [ ] 奇偶页页眉（题目/福州大学本科生毕业设计（论文）），宋体五号
 - [ ] 页码底端居中（前置罗马数字，正文阿拉伯数字）
@@ -222,11 +233,12 @@ section.left_margin = Cm(2.5)
 section.right_margin = Cm(2.0)
 ```
 
-### 设置中文字体
+### 设置双语文档字体（中文用宋体/黑体，英文/数字用 Times New Roman）
 
 ```python
-def set_cn_font(run, font_name='宋体', font_size=Pt(12), bold=False):
-    run.font.name = font_name
+def set_font(run, cn_font='宋体', en_font='Times New Roman', font_size=Pt(12), bold=False):
+    """设置双语字体：中文用 cn_font，英文/数字用 en_font"""
+    run.font.name = en_font
     run.font.size = font_size
     run.bold = bold
     rPr = run._r.get_or_add_rPr()
@@ -234,7 +246,9 @@ def set_cn_font(run, font_name='宋体', font_size=Pt(12), bold=False):
     if rFonts is None:
         rFonts = parse_xml(f'<w:rFonts {nsdecls("w")} />')
         rPr.insert(0, rFonts)
-    rFonts.set(qn('w:eastAsia'), font_name)
+    rFonts.set(qn('w:ascii'), en_font)
+    rFonts.set(qn('w:hAnsi'), en_font)
+    rFonts.set(qn('w:eastAsia'), cn_font)
 ```
 
 ### 正文段落
@@ -245,7 +259,7 @@ para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
 para.paragraph_format.line_spacing = Pt(20)
 para.paragraph_format.first_line_indent = Pt(24)
 for run in para.runs:
-    set_cn_font(run, '宋体', Pt(12))
+    set_font(run, cn_font='宋体', en_font='Times New Roman', font_size=Pt(12))
 ```
 
 ### 一级节标题
@@ -257,7 +271,7 @@ para.paragraph_format.space_after = Pt(24)
 para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
 para.paragraph_format.line_spacing = Pt(20)
 for run in para.runs:
-    set_cn_font(run, '黑体', Pt(16), bold=True)
+    set_font(run, cn_font='黑体', en_font='Times New Roman', font_size=Pt(16), bold=True)
 ```
 
 ### 页眉设置
@@ -272,7 +286,7 @@ p = odd_header.paragraphs[0]
 p.text = '论文题目'
 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 for run in p.runs:
-    set_cn_font(run, '宋体', Pt(10.5))
+    set_font(run, cn_font='宋体', en_font='Times New Roman', font_size=Pt(10.5))
 
 even_header = section.even_header
 even_header.is_linked_to_previous = False
@@ -280,7 +294,7 @@ p2 = even_header.paragraphs[0]
 p2.text = '福州大学本科生毕业设计（论文）'
 p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
 for run in p2.runs:
-    set_cn_font(run, '宋体', Pt(10.5))
+    set_font(run, cn_font='宋体', en_font='Times New Roman', font_size=Pt(10.5))
 ```
 
 ### 表格去左右边线
