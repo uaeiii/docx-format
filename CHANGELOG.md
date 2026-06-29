@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.4.0 (2026-06-29)
+
+### Added
+- **Figure caption same-page rule**: Figure captions must be on the same page as the figure — no page breaks between them
+- **White-space avoidance rule**: If a figure leaves ≥ 1/3 page blank on the previous page, scale the figure down or reposition it to fill the gap
+- Verification checklist updated with figure caption and white-space checks
+
 ## v1.3.0 (2026-06-29)
 
 ### Added
