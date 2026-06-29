@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.0 (2026-06-29)
+
+### Added
+- **Figure/Table spacing rule**: Blank line above and below each figure and table (skipped at page breaks)
+- **Subsection spacing rule**: Blank line between end of section body and next subsection (skipped at page breaks or chapter transitions)
+- Verification checklist updated with both spacing rules
+
 ## v1.4.0 (2026-06-29)
 
 ### Added
