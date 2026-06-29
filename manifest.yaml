@@ -1,0 +1,7 @@
+# manifest.yaml — Tooling metadata for docx-format
+schema_version: 1
+version: "1.0"
+requires-products:
+  - python-docx
+reference-files:
+  - E:\ClaudeWorkSpace\20.福州大学本科生毕业设计（论文）撰写规范.doc
