@@ -1,6 +1,6 @@
 ---
 name: docx-format
-description: 福州大学本科生毕业设计（论文）撰写规范——按福大教〔2019〕37号格式要求自动生成规范化docx文档
+description: 福州大学本科生毕业设计（论文）撰写规范——按福大教〔2019〕37号格式要求自动生成规范化docx文档，含图片插入防遮挡方案
 metadata:
   type: workflow
   domain: document
@@ -21,6 +21,12 @@ metadata:
     - 按规范生成论文
     - 撰写规范
     - 福大教2019
+    - 插入图片
+    - 添加图片
+    - 报告插图
+    - 图片嵌入
+    - EMF图片
+    - 文档插图
 ---
 
 # 福州大学本科生毕业设计（论文）撰写规范 - FZU Thesis Format
@@ -211,6 +217,8 @@ metadata:
 - [ ] 表格不加左右边线
 - [ ] 图题在图下方居中，表题在表上方居中
 - [ ] 公式居中编号右对齐
+- [ ] 图片段落行距为 SINGLE（非 EXACTLY），避免文字遮挡
+- [ ] EMF 图片已注册 image/x-emf 内容类型到 [Content_Types].xml
 
 ## 十、python-docx 代码片段
 
@@ -319,6 +327,70 @@ for bn in ['left', 'right']:
     b.set(qn('w:space'), '0')
     b.set(qn('w:color'), 'auto')
 ```
+
+### 插入图片（防遮挡方案）
+
+**核心规则：图片段落禁止使用固定行距（EXACTLY），必须使用单倍行距（SINGLE），否则图片高度会被行距限制而遮挡。**
+
+```python
+def add_image(doc, img_path, width_cm=14):
+    """插入图片，段落行距使用SINGLE（禁止EXACTLY）"""
+    para = doc.add_paragraph()
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    para.paragraph_format.space_before = Pt(6)
+    para.paragraph_format.space_after = Pt(6)
+    para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE  # 关键：单倍行距
+    run = para.add_run()
+    run.add_picture(img_path, width=Cm(width_cm))
+    return para
+
+
+def add_image_caption(doc, text):
+    """图题：宋体五号(10.5pt)，居中"""
+    para = doc.add_paragraph()
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    para.paragraph_format.space_before = Pt(3)
+    para.paragraph_format.space_after = Pt(6)
+    para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    para.paragraph_format.line_spacing = Pt(16)
+    run = para.add_run(text)
+    set_font(run, '宋体', 'Times New Roman', Pt(10.5), False)
+    return para
+```
+
+### 插入 EMF 矢量图（从已有 docx 提取时用）
+
+python-docx 不支持直接插入 EMF/WMF 格式。解决方案：两步法。
+
+**第一步：在文档中放白色不可见占位符**
+
+```python
+def add_emf_placeholder(doc, marker_id):
+    """为稍后替换的EMF图片添加白色不可见占位符"""
+    from docx.shared import RGBColor
+    para = doc.add_paragraph()
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    para.paragraph_format.space_before = Pt(6)
+    para.paragraph_format.space_after = Pt(6)
+    para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    run = para.add_run(f'[EMF_PLACEHOLDER_{marker_id}]')
+    set_font(run, '宋体', 'Times New Roman', Pt(1), False, RGBColor(255, 255, 255))
+    return para
+```
+
+**第二步：文档保存后，打开 ZIP 替换占位符为 EMF 图片**
+
+手动嵌入 EMF 的核心步骤：
+1. 用 zipfile 打开已保存的 docx
+2. 解析 `word/document.xml` 找到占位符段落并替换为 EMF 的 drawing XML
+3. 将 EMF 文件写入 `word/media/`
+4. 在 `word/_rels/document.xml.rels` 添加图片关系
+5. 在 `[Content_Types].xml` 注册 `image/x-emf` 内容类型
+6. EMF 图片段落的 XML 中 `lineRule` 必须设为 `auto`（不能是 `exact`）
+
+详细代码模板参见本项目对话历史中的 `embed_emf_after_save` 函数实现。
+
+---
 
 ## 参考资料
 
